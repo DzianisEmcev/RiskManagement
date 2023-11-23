@@ -1,0 +1,48 @@
+<mvc:View controllerName="friskmanagement.controller.f-risk-management"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m">
+    <Page id="page" title="{i18n>title}">
+        <content>
+            <Table 
+                id="listRisksTable" 
+                items="{path: '/Risks'}">
+                <columns>
+                    <Column width="12em">
+                        <Text text="{i18n>risksIdLabel}" />
+                    </Column>
+                    <Column width="12em">
+                        <Text text="{i18n>risksCreatedAtLabel}" />
+                    </Column>
+                    <Column width="12em">
+                        <Text text="{i18n>risksCreatedByLabel}" />
+                    </Column>
+                    <Column width="12em">
+                        <Text text="{i18n>risksModifiedAtLabel}" />
+                    </Column>
+                    <Column width="12em">
+                        <Text text="{i18n>risksModifiedByLabel}" />
+                    </Column>
+                    <Column width="12em">
+                        <Text text="{i18n>risksTitleLabel}" />
+                    </Column>
+                    <Column width="12em">
+                        <Text text="{i18n>risksOwnerLabel}" />
+                    </Column>
+                </columns>
+                <items>
+                    <ColumnListItem type="Navigation">
+                        <cells>
+                            <ObjectIdentifier text="{ID}" />
+                            <ObjectIdentifier text="{createdAt}" />
+                            <ObjectIdentifier text="{createdBy}" />
+                            <ObjectIdentifier text="{modifiedAt}" />
+                            <ObjectIdentifier text="{modifiedBy}" />
+                            <ObjectIdentifier text="{title}" />
+                            <ObjectIdentifier text="{owner}" />
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>
