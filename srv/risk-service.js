@@ -1,18 +1,44 @@
 
 // Import the cds facade object (https://cap.cloud.sap/docs/node.js/cds-facade)
+const { getAxiosConfigWithDefaults } = require('@sap-cloud-sdk/http-client/dist/http-client');
 const cds = require('@sap/cds')
 
 // The service implementation with all service handlers
 module.exports = cds.service.impl(async function() {
 
     // Define constants for the Risk and BusinessPartner entities from the risk-service.cds file
-    const { Risks, BusinessPartners } = this.entities;
+    const { Risks, BusinessPartners, Mitigations } = this.entities;
+
+    // =========================================================================================
+    // srv method (.BEFORE) use for validation data
+    this.before("READ", Risks, () => {
+        // console.log("Event Handler (.befor) started befor (.on) event");
+    })
+    // =========================================================================================
+
+    // =========================================================================================
+    // srv method (.ON) use for reading/writing data from/to database
+    // implement custom logic for Migrations entity (show owner name)
+    this.on("READ", Mitigations, (data) => {
+        const mitigations = Array.isArray(data) ? data : [data];
+
+        mitigations.forEach((mitigation) => {
+            console.log(mitigation.owner);
+        })
+
+        // console.log("Event Handler (.ON) started firs of all event handlers");
+    })
+    // =========================================================================================
 
     // This handler will be executed directly AFTER a READ operation on RISKS
     // With this we can loop through the received data set and manipulate the single risk entries
     this.after("READ", Risks, (data) => {
         // Convert to array, if it's only a single risk, so that the code won't break here
         const risks = Array.isArray(data) ? data : [data];
+
+        // =========================================================================================
+        // console.log("Event Handler (.AFTER) started after (.ON) event");
+        // =========================================================================================
 
         // Looping through the array of risks to set the virtual field 'criticality' that you defined in the schema
         risks.forEach((risk) => {
@@ -39,6 +65,10 @@ module.exports = cds.service.impl(async function() {
 
         })
     })
+
+    this.on("READ", Risks, (data) => {
+
+    })
     
     // connect to remote service
     const BPsrv = await cds.connect.to("API_BUSINESS_PARTNER");
@@ -60,7 +90,7 @@ module.exports = cds.service.impl(async function() {
         });
     });
 
-        // Risks?$expand=bp (Expand on BusinessPartner)
+    // Risks?$expand=bp (Expand on BusinessPartner)
     this.on("READ", Risks, async (req, next) => {
         /*
          Check whether the request wants an "expand" of the business partner
