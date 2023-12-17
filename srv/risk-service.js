@@ -19,12 +19,12 @@ module.exports = cds.service.impl(async function() {
     // =========================================================================================
     // srv method (.ON) use for reading/writing data from/to database
     // implement custom logic for Migrations entity (show owner name)
-    this.on("READ", Mitigations, (data) => {
-        const mitigations = Array.isArray(data) ? data : [data];
+    this.on("READ", Mitigations, (req) => {
+        // const mitigations = Array.isArray(req) ? req : [req];
 
-        mitigations.forEach((mitigation) => {
-            console.log(mitigation.owner);
-        })
+        // mitigations.forEach((mitigation) => {
+        //     console.log(mitigation.owner);
+        // })
 
         // console.log("Event Handler (.ON) started firs of all event handlers");
     })
@@ -32,9 +32,14 @@ module.exports = cds.service.impl(async function() {
 
     // This handler will be executed directly AFTER a READ operation on RISKS
     // With this we can loop through the received data set and manipulate the single risk entries
-    this.after("READ", Risks, (data) => {
+    this.after("READ", [Risks ,Mitigations], (data) => {
         // Convert to array, if it's only a single risk, so that the code won't break here
         const risks = Array.isArray(data) ? data : [data];
+
+        // console.log(data.data);
+        risks.forEach((risk) => {
+            console.log(risk.owner);
+        })
 
         // =========================================================================================
         // console.log("Event Handler (.AFTER) started after (.ON) event");
@@ -65,10 +70,6 @@ module.exports = cds.service.impl(async function() {
 
         })
     })
-
-    this.on("READ", Risks, (data) => {
-
-    })
     
     // connect to remote service
     const BPsrv = await cds.connect.to("API_BUSINESS_PARTNER");
@@ -88,6 +89,13 @@ module.exports = cds.service.impl(async function() {
                 apikey: process.env.apikey,
             },
         });
+    });
+
+    // getMitigations (check withot roles!)
+    this.on("getMitigations", async req => {
+        const IDRisk = req.query.SELECT.ID;
+        const Mitigations = await this.run(SELECT.from(Mitigations)).where({ "risks.ID": IDRisk });
+        return Mitigations;
     });
 
     // Risks?$expand=bp (Expand on BusinessPartner)
