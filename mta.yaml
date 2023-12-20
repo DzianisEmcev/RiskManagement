@@ -1,7 +1,6 @@
 _schema-version: "3.1"
 ID: risk-management
-description: Template for the Learning Journey Building side-by-side extensions on
-  SAP BTP
+description: "Template for the Learning Journey Building side-by-side extensions on SAP BTP"
 version: 3.0.0
 modules:
 - name: risk-management-srv
@@ -26,7 +25,7 @@ modules:
   - name: risk-management-db
   parameters:
     buildpack: nodejs_buildpack
-- name: risk-management-approuter
+- name: risk-management
   type: approuter.nodejs
   path: app/
   requires:
@@ -44,27 +43,37 @@ modules:
       name: ui5
       url: https://ui5.sap.com
   parameters:
-    disk-quota: 256M
+    disk-quota: 512M
     keep-existing-routes: true
-    memory: 256M
+    memory: 512M
 - name: risk-management-app-content
   type: com.sap.application.content
   path: .
   requires:
-  - name: risk-management-repo-host
+  - name: risk-management-html5-repo-host
     parameters:
       content-target: true
   build-parameters:
     build-result: resources
     requires:
     - artifacts:
-      - f-risk-management.zip
-      name: f-risk-management
+      - riskmanagement.zip
+      name: risk-management-fe
       target-path: resources/
     - artifacts:
-      - risk-management.zip
-      name: risk-management
+      - friskmanagement.zip
+      name: f-risk-management
       target-path: resources/
+- name: risk-management-fe
+  type: html5
+  path: app/risk-management
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
 - name: f-risk-management
   type: html5
   path: app/f-risk-management
@@ -75,17 +84,6 @@ modules:
     - npm install
     - npm run build:cf
     supported-platforms: []
-- name: risk-management
-  type: html5
-  path: app/risk-management
-  build-parameters:
-    build-result: dist
-    builder: custom
-    commands:
-    - npm install
-    - npm run build:cf
-    supported-platforms: []
-    
 resources:
 - name: risk-management-auth
   type: org.cloudfoundry.managed-service
@@ -117,7 +115,7 @@ resources:
   type: org.cloudfoundry.managed-service
   parameters:
     config:
-      HTML5Runtime_enabled: false
+      HTML5Runtime_enabled: true
       init_data:
         instance:
           destinations:
@@ -129,11 +127,10 @@ resources:
           existing_destinations_policy: update
     service: destination
     service-plan: lite
-- name: risk-management-repo-host
+- name: risk-management-html5-repo-host
   type: org.cloudfoundry.managed-service
   parameters:
     service: html5-apps-repo
-    service-name: risk-management-html5-srv
     service-plan: app-host
 parameters:
   deploy_mode: html5-repo
