@@ -1,3 +1,4 @@
+
 using {riskmanagement as rm} from '../db/schema';
 
 @path: 'service/risk'
@@ -33,8 +34,6 @@ service RiskService @(requires: 'authenticated-user') {
     ])                      as projection on rm.Mitigations;
 
     annotate Mitigations with @odata.draft.enabled;
-
-    function getMitigations(ID:String) returns String;
 
     // BusinessPartner
     @readonly

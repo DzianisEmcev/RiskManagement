@@ -1,4 +1,7 @@
+
 {
+  "xsappname": "risk-management",
+  "tenant-mode": "dedicated",
   "scopes": [
     {
       "name": "$XSAPPNAME.RiskViewer",
@@ -24,7 +27,7 @@
       "description": "generated",
       "scope-references": [
         "$XSAPPNAME.RiskManager"
-      ],
+       ],
       "attribute-references": []
     }
   ]
